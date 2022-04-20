@@ -1,0 +1,223 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <title>여러개 마커 표시하기gg</title>
+    <meta charset="utf-8">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> -->
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script> -->
+    <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+<style>
+    /* .label {margin-bottom: 96px;} */
+    .label * {display: inline-block;vertical-align: top;}
+    .label .left {background: url("https://t1.daumcdn.net/localimg/localimages/07/2011/map/storeview/tip_l.png") no-repeat;display: inline-block;height: 24px;overflow: hidden;vertical-align: top;width: 7px;}
+    .label .center {background: url(https://t1.daumcdn.net/localimg/localimages/07/2011/map/storeview/tip_bg.png) repeat-x;display: inline-block;height: 24px;font-size: 12px;line-height: 24px;}
+    .label .right {background: url("https://t1.daumcdn.net/localimg/localimages/07/2011/map/storeview/tip_r.png") -1px 0  no-repeat;display: inline-block;height: 24px;overflow: hidden;width: 6px;}
+</style>
+</head>
+<body>
+
+
+    
+    {% include "text_Navi.html" %}
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+
+ 
+    <div id="map" style=" z-index: 3;position: relative;">
+    
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=bc739a82bf6e98760fac5b9463dbe1da"></script>
+    
+    
+    <div class="li" style="z-index: 3;position: relative;">
+
+       <form method="post " id = "map_form">
+           {% csrf_token %}
+            <script>
+                // 0. 아파트 좌표 데이터 들고오기
+
+                
+
+                var mapContainer = document.getElementById('map'), // 지도를 표시할 div  
+                    mapOption = { 
+                        center: new kakao.maps.LatLng(35.1791552,129.0730083), // 지도의 중심좌표
+                        level: 4 // 지도의 확대 레벨
+                    };
+
+                var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+                
+                // 아파트에 대한 정보
+                // 커스텀오버레이를 지도에 띄울 정보
+
+                var apt = JSON.parse("{{ aptJson|escapejs }}");
+                console.log(apt)
+                
+                // 지도에 커스텀오버레이로 아파트를 보여줍니다
+                for (var i = 0; i < apt.length; i ++) {
+                    displayApt(apt[i]);
+                }
+
+            // href='testn"+apt.name+"'
+            
+                function displayApt(apt){
+                    // var content =' <div class ="label"><span class="left"></span><span class="center">'+'<a onclick= "javascript:on_click( #{apt.name} )" >'+ apt.name +'</a></span><span class="right"></span></div>';
+                    var content ="<div class ='label'><span class='left'></span><span class='center'>"+"<a class='apt_name'  >" + apt.name + "</a></span><span class='right'></span></div>";
+                    content = content.replace(/#{apt.name}/gi, '"' + apt.name + '"');
+// onclick= 'javascript:on_click( #{apt.name} )'
+                    var position = new kakao.maps.LatLng(apt.lat, apt.lng);
+                    // 커스텀 오버레이를 생성합니다
+                    var customOverlay = new kakao.maps.CustomOverlay({
+                        position: position,
+                        content:content, 
+                        
+                    });
+                    
+                    
+
+                    // 커스텀 오버레이를 지도에 표시합니다
+                    customOverlay.setMap(map);
+                }
+
+                var name_sub = $(".apt_name").on("click",function(name){
+                    console.log((name.target).text)
+                    console.log((name.target))
+                    var a_name = (name.target.text)
+                    
+                    alert(a_name)
+                    $.ajax({
+                        type:'POST',   //post 방식으로 전송
+                        url:' ',   //데이터를 주고받을 파일 주소
+                        data:{'a_name':a_name},   //위의 변수에 담긴 데이터를 전송해준다.
+                        dataType:"JSON",   //text 형식으로 데이터 전달
+                        success : function(a_name){   //파일 주고받기가 성공했을 경우. data 변수 안에 값을 담아온다.
+                            console.log("ㅎㅎ"+a_name + "ㅎㅎ");   
+                            $(".chart").html(a_name);     //현재 화면 위 id="chart" 영역 안에 data안에 담긴 html 코드를 넣어준다. 
+                            console.log("ㅎㅎ");
+                        },
+                        error : function(a_name){
+                            console.log("실패");
+                        }
+                    });
+                    
+                    
+                    // document.getElementById(a_name).submit();
+                });
+                // $(document).on("click",".a",function(){
+
+                
+                    var apt = JSON.parse("{{ apt_Json|escapejs }}");
+                    console.log(apt)
+                // });
+
+// 2. 아파트 마커 찍기
+var apt = JSON.parse("{{ aptJson|escapejs }}");
+        var customOverlays = $(apt).map(function(i, apt) {
+                    
+                    let content = `
+                        <div class="apt_marker" onclick='clickApt("${apt.code}");'>
+                            <div class="apt_title">${apt.title}</div>
+                            <div class="apt_icon"><img src="/static/img/apartment_icon.png" >
+                        </div>
+                        
+                    
+                    
+                    `
+                    
+                    return new kakao.maps.CustomOverlay({
+                        clickable: true,
+                        content: content, 
+                        position : new kakao.maps.LatLng(apt.lat, apt.lng),
+                        map:map
+                        });
+                    });
+        clusterer.addMarkers(customOverlays);
+        
+        // --------------------클릭코드
+        function clickApt(code){
+            console.log(code)
+            $.post({
+                url     : "/",   //데이터를 주고받을 파일 주소
+                data    : `a_code=${code}`,   //위의 변수에 담긴 데이터를 전송해준다.                
+                dataType: "TEXT",   //text 형식으로 데이터 전달
+                success : data => {   //파일 주고받기가 성공했을 경우. data 변수 안에 값을 담아온다.
+                    $("#navi_").html(data)
+                },
+                error   : (request, status, error) => {
+                    alert("code:" + request.status + "\n" + "message:" + "\n" + "error:" + error);
+                    console.log(request.responseText);
+                    console.log(error);
+                    console.log("ㅎㅎ;;");
+                }
+            });
+        }
+
+                // function on_click(name){
+                //     // name = name.replace(/#{name}/gi, '"' + name + '"');
+                //     // doument.getElementById(name);
+                //     console.log(name + " Overlay cliked");
+            
+                //     // document.getElementById(name).submit();
+                    
+                // }
+    
+
+            </script>
+        
+       </form>
+      
+    </div>
+</div>
+
+<div id="map" style="width:100%;height:900px;"></div>
+
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=bc739a82bf6e98760fac5b9463dbe1da"></script>
+<script>
+// 0. 아파트 좌표 데이터 들고오기
+var apt = JSON.parse("{{ aptJson|escapejs }}");
+console.log(apt.length)
+
+
+var mapContainer = document.getElementById('map'), // 지도를 표시할 div  
+    mapOption = { 
+        center: new kakao.maps.LatLng(35.1791552,129.0730083), // 지도의 중심좌표
+        level: 4 // 지도의 확대 레벨
+    };
+
+var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+ 
+// 아파트에 대한 정보
+// 커스텀오버레이를 지도에 띄울 정보
+
+
+ 
+// 지도에 커스텀오버레이로 아파트를 보여줍니다
+for (var i = 0; i < apt.length; i ++) {
+    displayApt(apt[i]);
+}
+
+function displayApt(apt){
+
+    var position = new kakao.maps.LatLng(apt.lat, apt.lng);
+    // 커스텀 오버레이를 생성합니다
+    var customOverlay = new kakao.maps.CustomOverlay({
+        position: position,
+        content: '<div class ="label"><span class="left"></span><span class="center">'+apt.name+'</span><span class="right"></span></div>'
+    });
+
+    // 커스텀 오버레이를 지도에 표시합니다
+    customOverlay.setMap(map);
+}
+</script>
+
+
+</body>
+</html>

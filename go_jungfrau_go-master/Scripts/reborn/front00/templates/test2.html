@@ -1,0 +1,262 @@
+{% load static %}
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static '/css/style.css' %}"/>
+    <title>test2</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=bc739a82bf6e98760fac5b9463dbe1da&libraries=clusterer"></script>
+    <!-- <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script> -->
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+        }
+        html,
+        body {
+            height: 100%;
+            
+
+        }
+        .apt_marker {          
+            background-color: transparent;  
+            opacity: 0.9;        
+        }
+        .apt_title {
+            color: #B22222;
+            text-align: center; 
+            font-size: 12px;
+            font-weight: bolder;
+            background-color: rgba(255, 250, 240, 0.8);
+            border-radius: 90%;
+        }
+        .label {
+            margin-bottom: 96px;
+        }
+
+        .label * {
+            display: inline-block;
+            vertical-align: top;
+        }
+
+        .label .left {
+            background: url("https://t1.daumcdn.net/localimg/localimages/07/2011/map/storeview/tip_l.png") no-repeat;
+            display: inline-block;
+            height: 24px;
+            overflow: hidden;
+            vertical-align: top;
+            width: 7px;
+        }
+
+        .label .center {
+            background: url(https://t1.daumcdn.net/localimg/localimages/07/2011/map/storeview/tip_bg.png) repeat-x;
+            display: inline-block;
+            height: 24px;
+            font-size: 12px;
+            line-height: 24px;
+        }
+
+        .label .right {
+            background: url("https://t1.daumcdn.net/localimg/localimages/07/2011/map/storeview/tip_r.png") -1px 0 no-repeat;
+            display: inline-block;
+            height: 24px;
+            overflow: hidden;
+            width: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div style=" position: absolute; z-index: 25 ">
+        {% include "test2_Navi.html" %}
+    </div>
+
+    <div id="map" style=" z-index: 3; position: relative;">
+        {% csrf_token %}
+    </div>
+    
+    <script>
+        // 1. 지도 생성
+        var map = new kakao.maps.Map(document.getElementById('map'), { // 지도를 표시할 div
+            center : new kakao.maps.LatLng(35.1791552,129.0730083), // 지도의 중심좌표 
+            level : 2 // 지도의 확대 레벨 
+        });
+        map.setMaxLevel(10);
+        // 2. 마커 클러스터러 생성
+        var styles = [{ // calculator 각 사이 값 마다 적용될 스타일을 지정한다
+                width : '30px', height : '30px',
+                background: 'rgba(51, 204, 255, .5)',
+                borderRadius: '15px',
+                color: '#000',
+                textAlign: 'center',
+                fontWeight: 'bold',
+                lineHeight: '31px'
+            },
+            {
+                width : '40px', height : '40px',
+                background: 'rgba(255, 153, 0, .5)',
+                borderRadius: '20px',
+                color: '#000',
+                textAlign: 'center',
+                fontWeight: 'bold',
+                lineHeight: '41px'
+            },
+            {
+                width : '50px', height : '50px',
+                background: 'rgba(255, 51, 204, .5)',
+                borderRadius: '25px',
+                color: '#000',
+                textAlign: 'center',
+                fontWeight: 'bold',
+                lineHeight: '51px'
+            }
+           
+        ];
+        var clusterer = new kakao.maps.MarkerClusterer({
+            map: map, // 마커들을 클러스터로 관리하고 표시할 지도 객체 
+            averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정 
+            minLevel: 4, // 클러스터 할 최소 지도 레벨 
+            styles: styles
+        });
+        clusterer.setCalculator(function( size ) {
+            var index;
+
+            if ( size < 50 ) {
+                index = 0; 
+            } else if ( size < 100 ) {
+                index = 1; 
+            } else {
+                index = 2; 
+            }
+            return index;
+        });
+
+
+
+        //아파트에 대한 정보
+        var apt = JSON.parse("{{ aptJson_geo|escapejs }}");
+        var apt_overlays = $(apt).map(function(i, apt) {
+            let content = `
+                        <div class="apt_marker" onclick='call("${apt.code}");'>
+                            <div class="apt_title">${apt.latest}</div>
+                            <div class="apt_icon"><img src="/static/img/apartment_icon.png" ></div>
+                        </div>
+                    `
+            return new kakao.maps.CustomOverlay({
+                content: content, 
+                position : new kakao.maps.LatLng(apt.lat, apt.lng),
+                map:map
+                });
+            });
+        clusterer.addMarkers(apt_overlays);
+
+        // ------call 함수 정의 start :: post 동적 페이지 요청------
+        function call(code) {
+            console.log(code)
+            $.post({
+                url: " ",      //데이터를 주고받을 파일 주소
+                data: `apt_code=${code}`, //위의 변수에 담긴 데이터를 전송해준다.                
+                dataType: "json",           //text 형식으로 데이터 전달
+                success: data => {         //파일 주고받기가 성공했을 경우. data 변수 안에 값을 담아온다.
+                    //$("#navi_").html(data)  //받아온 data 변수를 url경로의 #navi_의 이름을 가진 부분에 html의 형식으로 전달한다
+                    //'$("#navi_").empty()
+                    //$("#navi_").append( data )
+                    console.log( '----------------------' )
+                    console.log( data )
+                    console.log( '----------------------' )
+                    reBoot( data )
+                },
+                error: (request, status, error) => {
+                    alert("code:" + request.status + "\n" + "message:" + "\n" + "error:" + error);
+                    // console.log(request.responseText);
+                    console.log(error);
+                    console.log("ㅎㅎ;;");
+                }
+            });
+        }
+
+        function reBoot( data )
+        {
+            // 매물 정보 수정
+            console.log( data )
+            $('#apt_info_name').html( `아파트 명 : ${data.aptJson_info.name}` )
+            $('#apt_info_juso').html( `주소 : ${data.aptJson_info.juso}` )
+            $('#apt_info_pop').html( `세대수 : ${data.aptJson_info.pop}` )
+            $('#apt_info_since').html( `건축년도 : ${data.aptJson_info.since}` )
+            
+            // $("#chart").empty()
+            // $("#chart").append(  )
+            // 차트 1 수정
+            chart1Ex( data.aptJson_sil )
+
+            // 차트 2 수정
+            chart2Ex( data.aptJson_sil )
+
+            // $("#chart").append( data )
+        }
+
+        // ------call 함수 정의 end :: post 동적 페이지 요청------
+
+
+        // 3. 폴리곤 그리기
+        var gu_geo = JSON.parse("{{ guJson|escapejs }}");
+            areas = [];
+            for (var i = 0;i<gu_geo.length;i++){
+                geo_list = [];
+                gu_geo_list = gu_geo[i]['gu_geo_list']
+                for(var k=0;k<gu_geo_list.length;k++){
+                    geo_geo = [];
+                    for (var j=0; j<gu_geo_list[k].length;j++){
+                        
+                        geo_geo.push(new kakao.maps.LatLng(gu_geo_list[k][j][1], gu_geo_list[k][j][0]))
+                    }   
+                    geo_list.push(geo_geo)
+                }    
+                area = {
+                    "name" : gu_geo[i].gu_name,
+                    "path" : geo_list
+                }
+                areas.push(area);
+            }
+            var polygons = $(areas).map(function(i,areas){
+                return new kakao.maps.Polygon({
+                        // map: map, // 다각형을 표시할 지도 객체
+                        path: areas.path,
+                        strokeWeight: 2,
+                        strokeColor: '#004c80',
+                        strokeOpacity: 0.8,
+                        fillColor: '#fff',
+                        fillOpacity: 0.7 
+            });
+            })
+            function showPolygons(){
+                for (var i=0;i<polygons.length;i++){
+                    polygons[i].setMap(map);
+                }
+            }
+            function hidePloygons(){
+                for (var i=0;i<polygons.length;i++){
+                    polygons[i].setMap(null);
+                }
+            }
+
+
+
+        // !!중요!! 레벨 변화에 따라 마커 상태 변경하기
+        kakao.maps.event.addListener(map, 'zoom_changed', function() {
+                const level = map.getLevel();
+                console.log(level);
+                if (level > 7){
+                    clusterer.clear();
+                    showPolygons();
+                }else{
+                    clusterer.addMarkers(apt_overlays);
+                    hidePloygons();
+                }
+                
+            });
+        
+        
+        </script>
+</body>
+</html>

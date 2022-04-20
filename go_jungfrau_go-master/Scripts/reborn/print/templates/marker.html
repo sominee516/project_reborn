@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>여러개 마커 표시하기</title>
+    
+    <head>
+        <!-- 디자인 링크 받는곳 -->
+        <title>Bootstrap Example</title>
+        <meta charset="utf-8">
+        <!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
+        <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script> -->
+        <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> -->
+    </head>
+<!-- <style>
+    /* .label {margin-bottom: 96px;} */
+    .label * {display: inline-block;vertical-align: top;}
+    .label .left {background: url("https://t1.daumcdn.net/localimg/localimages/07/2011/map/storeview/tip_l.png") no-repeat;display: inline-block;height: 24px;overflow: hidden;vertical-align: top;width: 7px;}
+    .label .center {background: url(https://t1.daumcdn.net/localimg/localimages/07/2011/map/storeview/tip_bg.png) repeat-x;display: inline-block;height: 24px;font-size: 12px;line-height: 24px;}
+    .label .right {background: url("https://t1.daumcdn.net/localimg/localimages/07/2011/map/storeview/tip_r.png") -1px 0  no-repeat;display: inline-block;height: 24px;overflow: hidden;width: 6px;}
+</style> -->
+</head>
+<body> 
+    <div style=" overflow: scroll;position: absolute;z-index: 5;width:25%;height:500px;background-color:rgb(255, 255, 255);opacity: 0.7; ">
+        
+            <span >CLICK</span>
+        <section>
+
+            <div>
+                <navi class="test" >
+                    <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon">CLICK</span> -->
+                    
+                    <ul>
+                    <li>상위 카테고리
+                        <ul>
+                            <li>하위 카테고리01</a></li>
+                            <li>하위 카테고리02</a></li>
+                            <li>하위 카테고리03</a></li>
+                            <li>하위 카테고리04</a></li>
+                            <li>하위 카테고리05</a></li>
+                            <li>하위 카테고리06</a></li>
+                            <li>하위 카테고리07</a></li>
+                            <!-- <li>하위 카테고리08</a></li>
+                            <li>하위 카테고리09</a></li>
+                            <li>하위 카테고리10</a></li>
+                            <li>하위 카테고리11</a></li>
+                            <li>하위 카테고리12</a></li>
+                            <li>하위 카테고리13</a></li>
+                            <li>하위 카테고리13</a></li>
+                            <li>하위 카테고리13</a></li>
+                            <li>하위 카테고리13</a></li>
+                            <li>하위 카테고리13</a></li> -->
+                        </ul>
+                    </li>    
+                    </ul>
+                    <!-- <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                        <ul class="navbar-nav">
+                            <li class="nav-item active">
+                            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                            </li>
+                            <li class="nav-item">
+                            <a class="nav-link" href="#">Features</a>
+                            </li>
+                            <li class="nav-item">
+                            <a class="nav-link" href="#">Pricing</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Dropdown link
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <a class="dropdown-item" href="#">Action</a>
+                                <a class="dropdown-item" href="#">Another action</a>
+                                <a class="dropdown-item" href="#">Something else here</a>
+                            </div>
+                            </li>
+                        </ul>
+                        </div> -->
+
+                        
+                </navi>
+                <div class="dropdown">
+                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                    드롭다운 <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                    <li><a href="#">메뉴 1</a></li>
+                    <li><a href="#">메뉴 2</a></li>
+                    <li><a href="#">메뉴 3</a></li>
+                    <li><a href="#">메뉴 4</a></li>
+                    <li><a href="#">메뉴 5</a></li>
+                    <li><a href="#">메뉴 6</a></li>
+                    <li><a href="#">메뉴 7</a></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        </button>
+    </div>
+    <div id="map" style="position: relative; overflow: hidden; width:100%;height:800px; z-index: 3;">
+        <!-- <div id="map" style="position: relative; overflow: hidden; background: url("https://ssl.pstatic.net/static/maps/mantle/1x/pattern_1.png") 0px 0px repeat transparent;"></div> -->
+        
+        <!-- <div>
+            <div id="map" style="width:80%;height:700px;"></div>
+        </div> -->
+
+   
+        <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=bc739a82bf6e98760fac5b9463dbe1da"></script>
+    
+   
+
+
+        <script>
+            var mapContainer = document.getElementById('map'), // 지도를 표시할 div  
+                mapOption = { 
+                    center: new kakao.maps.LatLng(35.1791552,129.0730083), // 지도의 중심좌표
+                    level: 4 // 지도의 확대 레벨
+                };
+            
+            var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+
+
+    
+            // 아파트에 대한 정보
+            // 커스텀오버레이를 지도에 띄울 정보
+            var apt = [
+                {
+                    title: '연제현대힐스테이트아파트', 
+                    latlng: new kakao.maps.LatLng(35.1764482,129.0747028),
+                    price: '100억'
+                },
+                {
+                    title: '거제유림노르웨이숲아파트', 
+                    latlng: new kakao.maps.LatLng(35.179667, 129.070767),
+                    price: '11억'
+                },
+                {
+                    title: '백조아파트', 
+                    latlng: new kakao.maps.LatLng(35.174230, 129.070402),
+                    price: '9.5억'
+                },
+                {
+                    title: '시청역SKVIEW',
+                    latlng: new kakao.maps.LatLng(35.1815772,129.0759095),
+                    price: '11.5억'
+                }
+            ];
+
+            
+            // 지도에 커스텀오버레이로 아파트를 보여줍니다
+            for (var i = 0; i < apt.length; i ++) {
+
+                displayApt(apt[i]);
+
+
+            }
+
+            function displayApt(apt){
+
+                // 커스텀 오버레이를 생성합니다
+                var customOverlay = new kakao.maps.CustomOverlay({
+                    position: apt.latlng,
+                    content: '<div class ="label"><span class="left"></span><span class="center">'+apt.title+'</span><span class="right"></span></div>'
+                });
+
+                // 커스텀 오버레이를 지도에 표시합니다
+                customOverlay.setMap(map);
+            }
+        </script>
+        
+    </div>
+
+</body>
+</html>
+

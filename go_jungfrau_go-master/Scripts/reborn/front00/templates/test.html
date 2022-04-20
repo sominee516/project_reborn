@@ -1,0 +1,297 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static '/css/style.css' %}" />
+    <title>Title</title>
+    <!-- 디자인 링크 받는곳 -->
+    <title>Bootstrap Example</title>
+    <meta charset="utf-8">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> -->
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script> -->
+    <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
+    <!-- <script type="module">
+            import config from '../config/config.json';
+            console.dir(config);
+         </script> -->
+        <!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> -->
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script> -->
+    <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+    <style>
+         *{
+                margin: 0px;
+                padding: 0px;
+            }
+            html, body {
+                height: 100%;
+    
+            }
+        .label {
+            margin-bottom: 96px;
+        }
+
+        .label * {
+            display: inline-block;
+            vertical-align: top;
+        }
+
+        .label .left {
+            background: url("https://t1.daumcdn.net/localimg/localimages/07/2011/map/storeview/tip_l.png") no-repeat;
+            display: inline-block;
+            height: 24px;
+            overflow: hidden;
+            vertical-align: top;
+            width: 7px;
+        }
+
+        .label .center {
+            background: url(https://t1.daumcdn.net/localimg/localimages/07/2011/map/storeview/tip_bg.png) repeat-x;
+            display: inline-block;
+            height: 24px;
+            font-size: 12px;
+            line-height: 24px;
+        }
+
+        .label .right {
+            background: url("https://t1.daumcdn.net/localimg/localimages/07/2011/map/storeview/tip_r.png") -1px 0 no-repeat;
+            display: inline-block;
+            height: 24px;
+            overflow: hidden;
+            width: 6px;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=bc739a82bf6e98760fac5b9463dbe1da"></script>
+    <style>
+        .label {margin-bottom: 96px;}
+        .label * {display: inline-block;vertical-align: top;}
+        .label .left {background: url("https://t1.daumcdn.net/localimg/localimages/07/2011/map/storeview/tip_l.png") no-repeat;display: inline-block;height: 24px;overflow: hidden;vertical-align: top;width: 7px;}
+        .label .center {background: url(https://t1.daumcdn.net/localimg/localimages/07/2011/map/storeview/tip_bg.png) repeat-x;display: inline-block;height: 24px;font-size: 12px;line-height: 24px;}
+        .label .right {background: url("https://t1.daumcdn.net/localimg/localimages/07/2011/map/storeview/tip_r.png") -1px 0  no-repeat;display: inline-block;height: 24px;overflow: hidden;width: 6px;}
+    </style>
+</head>
+
+<body>    
+    {% include "text_Navi.html" %}
+    <div id="map" style="z-index: 3; position: relative;">
+        <!-- <div id="map" style="position: relative; overflow: hidden; background: url("https://ssl.pstatic.net/static/maps/mantle/1x/pattern_1.png") 0px 0px repeat transparent;"></div> -->
+        <!-- <div>
+            <div id="map" style="width:80%;height:700px;"></div>
+        </div> -->
+        <div class="li" style="z-index: 3;position: relative;">
+            <form method="post " id="map_form">
+                {% csrf_token %}
+            </form>
+        </div>
+    </div>
+    <script>
+        // 0. 아파트 좌표 데이터 들고오기
+        var mapContainer = document.getElementById('map'), // 지도를 표시할 div  
+            mapOption = {
+                center: new kakao.maps.LatLng(35.1791552, 129.0730083), // 지도의 중심좌표
+                level: 4 // 지도의 확대 레벨
+            };
+            
+        var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+        // 아파트에 대한 정보
+        // 커스텀오버레이를 지도에 띄울 정보
+        var apt = JSON.parse('{{ aptJson|escapejs }}');
+        //console.log(JSON.stringify('{{aptJson}}'));
+        //  console.log(JSON.stringify(apt));
+        // 지도에 커스텀오버레이로 아파트를 보여줍니다
+        for (var i = 0; i < apt.length; i++) {
+            displayApt(apt[i]);  
+            // console.log( `#${apt[i].name}` )
+            // console.log( $(`#${apt[i].name}`) )
+            // $(`#xxxxx`).on('click', e=>{
+            //     alert('콜')
+            // })
+            //break     
+        }
+        // href='testn"+apt.name+"'
+        function displayApt(apt) {
+            let { code } = apt;
+            // console.log( 'apt', code )
+            
+            // var content =' <div class ="label"><span class="left"></span><span class="center">'+'<a onclick= "javascript:on_click( #{apt.name} )" >'+ apt.name +'</a></span><span class="right"></span></div>';
+            let content = `
+                <div class ='apt_marker' onclick='call("${apt.code}");'>
+                    <span class='left'>
+                    </span>
+                    <span class='center' >
+                        <a class='apt_name_id' >
+                            ${apt.price}
+                        </a>
+                    </span>
+                    <span class='right'>
+                    </span>
+                </div>
+            ` 
+            //content = content.replace(/#{apt.name}/gi, '"' + apt.name + '"');
+            // onclick= 'javascript:on_click( #{apt.name} )'
+            var position = new kakao.maps.LatLng(apt.lat, apt.lng);
+            // 커스텀 오버레이를 생성합니다
+            var customOverlay = new kakao.maps.CustomOverlay({
+                position: position,
+                content: content,
+
+            });
+            // 커스텀 오버레이를 지도에 표시합니다
+            customOverlay.setMap(map);          
+            
+            kakao.maps.event.addListener(customOverlay, 'click', function() {
+                console.log('evt call');
+            });
+        }        
+
+        function call( code ){
+            console.log( code )
+            $.post({                
+                url     : "/front00/",   //데이터를 주고받을 파일 주소
+                data    : `a_name=${code}`,   //위의 변수에 담긴 데이터를 전송해준다.                
+                dataType: "TEXT",   //text 형식으로 데이터 전달
+                success : data => {   //파일 주고받기가 성공했을 경우. data 변수 안에 값을 담아온다.
+                    $("#navi_").html(data)
+                    // console.log( name, data )
+                    // setTimeout(function () {
+                    //     console.log("ㅎㅎ" + data.text + "ㅎㅎ");
+                    //     // apt_name_succ(data)
+                    //     $("#navi_").html(data);     //현재 화면 위 id="message" 영역 안에 data안에 담긴 html 코드를 넣어준다. 
+                    //     console.log("햄볶아");
+                    //     console.log($("#navi_").html(data));
+                    // }, 2000);
+                },
+                error   : (request, status, error) => {
+                    alert("code:" + request.status + "\n" + "message:" + "\n" + "error:" + error);
+                    console.log(request.responseText);
+                    console.log(error);
+                    console.log("ㅎㅎ;;");
+                }
+            });
+        }
+        // function on_click(name) {            
+        //     // name = name.replace(/#{name}/gi, '"' + name + '"');
+        //     // doument.getElementById(name);
+        //     //console.log(name + " Overlay cliked");
+        //     // document.getElementById(name).submit();
+        // }
+
+        /*
+        var a = 0
+        var name_sub = $(".apt_name_id").on("click", function (name) {
+            a += 1
+            console.log((name.target).text)
+            console.log(a)
+            var a_name = (name.target.text)
+            console.log("가자");
+            //  alert(a_name)
+
+
+            $.ajax({
+
+                type: 'POST',   //post 방식으로 전송
+                url: " ",   //데이터를 주고받을 파일 주소
+                data: { 'a_name': a_name },   //위의 변수에 담긴 데이터를 전송해준다.
+
+                dataType: "TEXT",   //text 형식으로 데이터 전달
+
+                success: function (data) {   //파일 주고받기가 성공했을 경우. data 변수 안에 값을 담아온다.
+                    setTimeout(function () {
+                        console.log("ㅎㅎ" + data.text + "ㅎㅎ");
+                        // apt_name_succ(data)
+                        $("#navi_").html(data);     //현재 화면 위 id="message" 영역 안에 data안에 담긴 html 코드를 넣어준다. 
+                        console.log("햄볶아");
+                        console.log($("#navi_").html(data));
+                    }, 2000);
+                }, error: function (request, status, error) {
+                    alert("code:" + request.status + "\n" + "message:" + "\n" + "error:" + error);
+                    console.log(request.responseText);
+                    console.log(error);
+                    console.log("ㅎㅎ;;");
+                }
+            });
+
+
+            // document.getElementById(a_name).submit();
+        });
+        */
+         // $(document).on("click",".a",function(){
+
+
+         // });
+
+
+        //     $(".apt_name_div").on("click",function(name){
+        //         a += 1 
+        //         console.log((name.target).text)
+        //         console.log(a)
+        //         var a_name = (name.target.text)
+        //         console.log("가자");
+        //         setTimeout(function(){
+        //             getData(a_name);
+        //         },1000);
+
+        //         //  alert(a_name)
+        //     });    
+
+
+        // function getData(a_name){
+        //     setTimeout(function(){}, 1000);
+        //     $.ajax({
+
+        //         type:'POST',   //post 방식으로 전송
+        //         url:" ",   //데이터를 주고받을 파일 주소
+        //         data:{'a_name':a_name},   //위의 변수에 담긴 데이터를 전송해준다.
+
+        //         dataType:"TEXT",   //text 형식으로 데이터 전달
+
+
+        //         success : function(data){   //파일 주고받기가 성공했을 경우. data 변수 안에 값을 담아온다.
+
+        //             setTimeout(function () {
+        //                 // console.log("ㅎㅎ"+data.text + "ㅎㅎ");   
+        //                 // apt_name_succ(data)
+
+        //                 $("#navi_").html(data);
+        //                 // $("#navi_").html(data);     //현재 화면 위 id="message" 영역 안에 data안에 담긴 html 코드를 넣어준다. 
+        //                 console.log("햄볶아");
+        //                 console.log($("#navi_").html(data))                                   
+        //             }, 1000);
+
+
+        //         },error : function(request,status,error){
+        //             setTimeout(function () {
+        //             alert("code:"+request.status+"\n"+"message:"+"\n"+"error:"+error);
+        //             console.log(request.responseText);
+        //             console.log(error);
+        //             console.log("ㅎㅎ;;");
+        //         }, 1000);
+        //         }
+        //     });   },200);
+        // }
+
+            // getData(function(tableData) { 
+            //     $("#navi_").html(tableData); // $.get()의 response 값이 tableData에 전달됨 
+            // });
+
+
+
+             // document.getElementById(a_name).submit();
+
+
+
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,261 @@
+{% load static %} 
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <title>main_Navi</title>
+    <style>
+            *{
+                margin: 0px;
+                padding: 0px;
+            }
+            html, body {
+                height: 100%;
+    
+            }
+            </style>
+        <!-- 디자인 링크 받는곳 -->
+        <title>Bootstrap Example</title>
+        <meta charset="utf-8">
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<style>
+    .label {margin-bottom: 96px;}
+    .label * {display: inline-block;vertical-align: top;}
+    .label .left {background: url("https://t1.daumcdn.net/localimg/localimages/07/2011/map/storeview/tip_l.png") no-repeat;display: inline-block;height: 24px;overflow: hidden;vertical-align: top;width: 7px;}
+    .label .center {background: url(https://t1.daumcdn.net/localimg/localimages/07/2011/map/storeview/tip_bg.png) repeat-x;display: inline-block;height: 24px;font-size: 12px;line-height: 24px;}
+    .label .right {background: url("https://t1.daumcdn.net/localimg/localimages/07/2011/map/storeview/tip_r.png") -1px 0  no-repeat;display: inline-block;height: 24px;overflow: hidden;width: 6px;}
+</style>
+</head>
+
+<body>
+    <div id='navi_' style=" position: absolute; z-index: 5; "> 
+        <!-- style=" overflow: auto; position: absolute; z-index: 10; background-color:rgb(255, 255, 255); box-shadow :1px 1px rgba(128, 128, 128, 0.541);" -->
+            <div class = 'navi_bar' style=" overflow: auto; position: absolute; z-index: 10;  ">
+                <nav class="navbar navbar-light bg-light">
+                    <div class="container-fluid">
+                        <a class="navbar-brand" href="#">
+                            <img src="/static/img/apt.png" alt="" width="30" height="24" class="d-inline-block align-text-top">
+                            융프라우
+                            
+                        </a>
+                        <form class="d-flex">
+                            <input class="form-control me-2" type="search" placeholder="오이소 보이소 사이소" aria-label="Search">
+                            <!-- <button class="btn btn-outline-success" type="submit">사이소</button> -->
+                            <button> 사이소 </button>
+                        </form>
+
+
+                        <nav class="test" >
+                <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon">CLICK</span> -->
+                            <div class = "apt_info">   
+                                
+                                <p>아파트 명 :  </p>
+                                <p>주소 :  </p>
+                                <p>세대수 :  </p>
+                                <p>건축년도 : </p></br>
+                                
+                            </div>
+                        </nav>                            
+
+                    </div>
+                </nav>
+            
+                <div id = "chart" >
+                    <div >
+                        <canvas id="myChart_line"></canvas>
+                        <canvas id="myChart_rabar"></canvas>
+                    </div>                
+
+                </div>
+            
+                <script >
+
+                    //apt 실거래 데이터 받아오기
+                    
+                    var apt = JSON.parse("{{ aptJson_sil|escapejs }}");
+
+
+                    console.log(apt)
+                    var apt_name = new Array();
+                    var apt_price = new Array();
+                    var apt_year = new Array();
+
+
+                    for(i=0;i<apt.length;i++){
+                        // console.log(apt[i])
+                        // console.log(i)
+                        var d = apt[i];
+                        apt_name.push(d.name);
+                        apt_price.push(d.price);
+                        apt_year.push(d.year)
+                    }
+                    console.log(apt_name)
+                    console.log(apt_price)
+                    console.log(apt_year)
+
+
+
+                    var ctx = document.getElementById("myChart_line").getContext('2d');
+                    
+
+                    //chart js
+                    var myChart = new Chart(ctx,{
+                            type: 'line',
+                            data: {
+                                labels: apt_year,
+                                datasets: [{
+                                label: '가격변동',
+                                    data: apt_price,
+                                    borderColor: "rgba(255, 201, 14, 1)",
+                                    backgroundColor: "rgba(255, 201, 14, 0.5)",
+                                    fill: true,
+                                    lineTension: 0
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                title: {
+                                    display: true,
+                                    text: '라인 차트 테스트'
+                                },
+                                tooltips: {
+                                    mode: 'index',
+                                    intersect: false,
+                                },
+                                hover: {
+                                    mode: 'nearest',
+                                    intersect: true
+                                },
+                                scales: {
+                                    xAxes: [{
+                                        display: true,
+                                        scaleLabel: {
+                                            display: true,
+                                            labelString: apt_name[1]
+                                        }
+                                    }],
+                                    yAxes: [{
+                                        display: true,
+                                        ticks: {
+                                            suggestedMin: 0,
+                                        },
+                                        scaleLabel: {
+                                            display: true,
+                                            labelString: 'price of year'
+                                        }
+                                    }]
+                                }
+                            }
+                        });
+
+                </script>
+                <script >
+
+                    //apt 실거래 데이터 받아오기
+                    
+                    var apt = JSON.parse("{{ aptJson_sil|escapejs }}");
+    
+    
+                    console.log(apt)
+                    var apt_name = new Array();
+                    var apt_price = new Array();
+                    var apt_year = new Array();
+    
+    
+                    for(i=0;i<apt.length;i++){
+                        // console.log(apt[i])
+                        // console.log(i)
+                        var d = apt[i];
+                        apt_name.push(d.name);
+                        apt_price.push(d.price);
+                        apt_year.push(d.year)
+                    }
+                    
+                    console.log(apt_name)
+                    console.log(apt_price)
+                    console.log(apt_year)
+    
+    
+    
+                    var ctx = document.getElementById("myChart_rabar").getContext('2d');
+                    
+    
+                    //chart js
+                    var myChart = new Chart(ctx,{
+                            type: 'radar',
+                            data: {
+                                labels: apt_year,
+                                datasets: [{
+                                label: '가격변동',
+                                    data: apt_price,
+                                    borderColor: "rgba(255, 201, 14, 1)",
+                                    backgroundColor: "rgba(5, 201, 14, 0.5)",
+                                    fill: true,
+                                    lineTension: 0
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                title: {
+                                    display: true,
+                                    text: '라인 차트 테스트'
+                                },
+                                tooltips: {
+                                    mode: 'index',
+                                    intersect: false,
+                                },
+                                hover: {
+                                    mode: 'nearest',
+                                    intersect: true
+                                },
+                                scales: {
+                                    xAxes: [{
+                                        display: true,
+                                        scaleLabel: {
+                                            display: true,
+                                            labelString: apt_name[1]
+                                        }
+                                    }],
+                                    yAxes: [{
+                                        display: true,
+                                        ticks: {
+                                            suggestedMin: 0,
+                                        },
+                                        scaleLabel: {
+                                            display: true,
+                                            labelString: 'price of year'
+                                        }
+                                    }]
+                                }
+                            }
+                        });
+    
+                </script>
+           </div> 
+            
+    </div>
+
+
+        <!-- <div class="dropdown" style="margin: 15px;">
+            <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            드롭다운 <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+            <li><a href="#">메뉴 1</a></li>
+            <li><a href="#">메뉴 2</a></li>
+            <li><a href="#">메뉴 3</a></li>
+            <li><a href="#">메뉴 4</a></li>
+            <li><a href="#">메뉴 5</a></li>
+            <li><a href="#">메뉴 6</a></li>
+            <li><a href="#">메뉴 7</a></li>
+            </ul>
+        </div> -->
+
+
+</body>
+</html>

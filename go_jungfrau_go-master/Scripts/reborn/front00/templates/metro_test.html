@@ -1,0 +1,55 @@
+<html>
+    <head>
+
+    </head>
+    <body>
+        <div id="map" style="width:100%;height:900px;"></div>
+
+        <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=bc739a82bf6e98760fac5b9463dbe1da"></script>
+
+        <script>
+            
+            var metro = JSON.parse("{{ metroJson|escapejs }}");
+            console.log(metro)
+            
+            // 0. 오버레이로 띄울 이미지 불러오기
+            var imageSrc = '../static/img/metro_marker.png',
+                imageSize = new kakao.maps.Size(34, 39), // 마커이미지의 크기입니다
+                imageOption = {offset: new kakao.maps.Point(20, 39)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+            var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
+            // 1. 지도 표시하기
+            var mapContainer = document.getElementById('map'), // 지도를 표시할 div  
+                mapOption = { 
+                    center: new kakao.maps.LatLng(35.1791552,129.0730083), // 지도의 중심좌표
+                    level: 4 // 지도의 확대 레벨
+                };
+
+            var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+
+            // 2. 지하철 마커 보여주기
+            for (var i = 0; i< metro.length; i++){
+                displayMetro(metro[i]);
+            }
+
+            // 2. 커스텀 오버레이 생성
+            function displayMetro(metro){
+
+                // 포지션저장
+                var position = new kakao.maps.LatLng(metro.lat, metro.lng);
+                // 마우스 오버시 보여줄 이름
+                var content = metro.name;
+                
+                var marker = new kakao.maps.Marker({
+                    position: position,
+                    image: markerImage
+                    // image : metro_img
+                });
+
+                // 커스텀 오버레이를 지도에 표시합니다
+                marker.setMap(map);
+            }
+
+        </script>
+        
+    </body>
+</html>
